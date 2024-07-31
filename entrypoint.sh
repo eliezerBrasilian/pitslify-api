@@ -27,5 +27,3 @@ git pull origin main
 # Clean and package the application, skipping tests
 mvn clean package -DskipTests
 
-# Run the jar file
-java -jar target/*.jar
