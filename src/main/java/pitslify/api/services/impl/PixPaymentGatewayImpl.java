@@ -46,6 +46,7 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
     @Override
     public ResponseEntity<Object> generatePixKey(OrderRequestBodyDto orderRequestBodyDto){
+        logger.info("ProdAccesToken: " + new AppConfig().getPROD_ACCESS_TOKEN());
         MercadoPagoConfig.setAccessToken(new AppConfig().getPROD_ACCESS_TOKEN());
 
         var requestOptions = mercadoPagoApiService.getRequestOptions();
@@ -76,6 +77,7 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
             return ResponseEntity.ok().body(response);
 
         }catch (MPApiException | MPException e){
+            logger.info(e.getLocalizedMessage());
            throw new RuntimeException(e.getMessage());
         }
     }

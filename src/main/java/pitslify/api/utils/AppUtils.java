@@ -47,35 +47,6 @@ public class AppUtils {
     public static OffsetDateTime getBrasiliaOffsetTime(){
         return OffsetDateTime.now(ZoneOffset.ofHours(-3));
     }
-    
-    public ResponseEntity<Object> AppCustomJson(MensagemRetorno mensagemRetorno, Item item){
-
-        return switch (mensagemRetorno) {
-            case ITEM_NAO_EXISTE ->
-                    ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", item.toString() + " nao existe"));
-            case EXCLUIDO_COM_SUCESSO ->
-                    ResponseEntity.ok().body(Map.of("message", item.toString() + " excluido com sucesso"));
-            case EDITADO_COM_SUCESSO ->
-                    ResponseEntity.ok().body(Map.of("message", item.toString() + " atualizado com sucesso no banco de dados"));
-            default -> ResponseEntity.ok().body(Map.of("message", "sucesso ao adicionar"));
-        };
-    }
-
-    public static String CustomMensagemExcessao(MensagemRetorno mensagemRetorno, String mensagem){
-        return switch (mensagemRetorno){
-            case FALHA_AO_ADICIONAR ->
-                "falha ao adicionar devido a uma excessao" + mensagem;
-
-            case FALHA_AO_EDITAR->
-                "falha ao deletar devido a uma excessao" + mensagem;
-
-            case FALHA_AO_DELETAR->
-               "falha ao deletar devido a uma excessao" + mensagem;
-
-            default -> "";
-        };
-    }
-
 
     public static boolean verificaExpiracao(Date expirationDate){
         // Obtém a data e hora atuais
