@@ -1,5 +1,6 @@
 package pitslify.api.services.impl;
 
+import org.springframework.beans.factory.annotation.Value;
 import pitslify.api.config.AppConfig;
 import pitslify.api.dtos.AuthRequestDto;
 import pitslify.api.dtos.MercadoPagoNotificacaoRequestDto;
@@ -35,6 +36,9 @@ import java.util.logging.Logger;
 public class PixPaymentGatewayImpl implements PixPaymentGateway {
     private final Logger logger = Logger.getLogger(PixPaymentGatewayImpl.class.getName());
 
+    @Value("${prod.access.token}")
+    private String prodAccessToken;
+
     @Autowired
     OrderRepository orderRepository;
 
@@ -46,8 +50,8 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
     @Override
     public ResponseEntity<Object> generatePixKey(OrderRequestBodyDto orderRequestBodyDto){
-        logger.info("ProdAccesToken: " + new AppConfig().getPROD_ACCESS_TOKEN());
-        MercadoPagoConfig.setAccessToken(new AppConfig().getPROD_ACCESS_TOKEN());
+        logger.info("ProdAccesToken: " + prodAccessToken);
+        MercadoPagoConfig.setAccessToken(prodAccessToken);
 
         var requestOptions = mercadoPagoApiService.getRequestOptions();
 
@@ -87,7 +91,7 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
             MercadoPagoNotificacaoRequestDto mercadoPagoNotificacaoRequestDto)
             throws MPException, MPApiException {
 
-        MercadoPagoConfig.setAccessToken(new AppConfig().getPROD_ACCESS_TOKEN());
+        MercadoPagoConfig.setAccessToken(prodAccessToken);
 
         var pagamento = new PaymentClient();
 
