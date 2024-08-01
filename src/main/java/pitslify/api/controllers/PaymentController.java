@@ -1,5 +1,6 @@
 package pitslify.api.controllers;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import pitslify.api.dtos.MercadoPagoNotificacaoRequestDto;
 import pitslify.api.records.OrderRequestBodyDto;
 import pitslify.api.repositories.OrderRepository;
@@ -83,31 +84,31 @@ public class PaymentController {
      */
 
     @PostMapping("generate-pix-fake")
-    String generatePixKeyFake(
+    ResponseEntity<Map<String, String>> generatePixKeyFake(
             @RequestBody OrderRequestBodyDto orderRequestBodyDto) {
         System.out.println(orderRequestBodyDto);
 
         return pixPaymentGateway.generatePixKeyFake(orderRequestBodyDto);
     }
 
-    public record PaymentPixRequestDto(String payment_id){};
-//    @PostMapping("do-payment-pix-fake")
-//    ResponseEntity<Object> pagamentoPixFake(
+    public record PaymentPixRequestDto(@JsonProperty("order_id") String orderId){};
+    @PostMapping("do-payment-pix-fake")
+    ResponseEntity<Object> pagamentoPixFake(
+            @RequestBody
+            PaymentPixRequestDto paymentPixRequestDto) {
+
+
+        return  pixPaymentGateway.doPixPaymentFake(paymentPixRequestDto);
+    }
+
+//    @PostMapping("mercadopago/notificacao/fake")
+//    ResponseEntity<Object> notificacaoFake(
 //            @RequestBody
-//            PaymentPixRequestDto paymentPixRequestDto) throws MPException, MPApiException, IOException, InterruptedException {
+//            PaymentPixRequestDto paymentPixRequestDto) throws MPException, MPApiException {
+//
+//        System.out.println("recebido");
 //        System.out.println(paymentPixRequestDto.payment_id);
 //
-//        return  pixPaymentGateway.doPixPaymentFake(paymentPixRequestDto);
+//        return pixPaymentGateway.checkPaymentStatusFake(paymentPixRequestDto.payment_id);
 //    }
-
-    @PostMapping("mercadopago/notificacao/fake")
-    ResponseEntity<Object> notificacaoFake(
-            @RequestBody
-            PaymentPixRequestDto paymentPixRequestDto) throws MPException, MPApiException {
-
-        System.out.println("recebido");
-        System.out.println(paymentPixRequestDto.payment_id);
-
-        return pixPaymentGateway.checkPaymentStatusFake(paymentPixRequestDto.payment_id);
-    }
 }

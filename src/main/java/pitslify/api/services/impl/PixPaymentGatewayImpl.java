@@ -1,7 +1,7 @@
 package pitslify.api.services.impl;
 
 import org.springframework.beans.factory.annotation.Value;
-import pitslify.api.config.AppConfig;
+import pitslify.api.controllers.PaymentController;
 import pitslify.api.dtos.AuthRequestDto;
 import pitslify.api.dtos.MercadoPagoNotificacaoRequestDto;
 import pitslify.api.dtos.MercadoPagoNotificacaoResponseDto;
@@ -147,17 +147,24 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
     }
 
     @Override
-    public String generatePixKeyFake(OrderRequestBodyDto orderRequestBodyDto) {
+    public ResponseEntity<Map<String, String>> generatePixKeyFake(OrderRequestBodyDto orderRequestBodyDto) {
 
         try {
-            var paymentRequestEntity = new OrderEntity(orderRequestBodyDto);
 
-            var paymentRequest = orderRepository
+            var orderEntity = orderRepository
                     .save(new OrderEntity(orderRequestBodyDto));
 
-            sendCustomWebhook(paymentRequest);
+            var orderId = orderEntity.getId();
 
-            return "00020126420014br.gov.bcb.pix0120admin@foodfacil.site520400005303986540525.505802BR5923DEELIEZER202202110139296009Sao Paulo62240520mpqrinter791905408246304A712";
+           // sendCustomWebhook(paymentRequest);
+
+            return ResponseEntity.ok().body(
+                    Map.of(
+                            "order_id",orderId,
+                            "pix_key", "00020126420014br.gov.bcb.pix0120admin@foodfacil.site520400005303986540525.505802BR5923DEELIEZER202202110139296009Sao Paulo62240520mpqrinter791905408246304A712"
+                    )
+
+            ) ;
         } catch (Exception e) {
             // Logar a exceção detalhadamente
             logger.severe("Erro ao gerar a chave Pix fake: " + e.getMessage());
@@ -217,30 +224,30 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
         }
     }
 
-//    @Override
-//    public ResponseEntity<Object> doPixPaymentFake(PaymentController.PaymentPixRequestDto paymentPixRequestDto) throws IOException, InterruptedException {
-//        var optionalPaymentRequestEntity = orderRepository.findById(paymentPixRequestDto.payment_id());
-//
-//        if(optionalPaymentRequestEntity.isEmpty()){
-//            return ResponseEntity.badRequest().body("pagamento não existe");
-//        }
-//
-//        var paymentRequestData = optionalPaymentRequestEntity.get();
-//        paymentRequestData.setStatus("approved");
-//
-//        orderRepository.save(paymentRequestData);
-//
-//        sendCustomWebhook(paymentRequestData);
-//
-//        var login  = createLogin(paymentRequestData.getPayer(),
-//                paymentRequestData.getProduct());
-//
-//        return ResponseEntity.ok().body(
-//                Map.of("message: ", "Pagamento aprovado com sucesso",
-//                       "data",login
-//                        )
-//        );
-//    }
+
+    public ResponseEntity<Object> doPixPaymentFake(PaymentController.PaymentPixRequestDto paymentPixRequestDto) {
+        var optionalPaymentRequestEntity = orderRepository.findById(paymentPixRequestDto.orderId());
+
+        if(optionalPaymentRequestEntity.isEmpty()){
+            return ResponseEntity.badRequest().body("orderId não existe");
+        }
+
+        var paymentRequestData = optionalPaymentRequestEntity.get();
+        paymentRequestData.setStatus("approved");
+
+        orderRepository.save(paymentRequestData);
+
+       // sendCustomWebhook(paymentRequestData);
+
+        var login  = createLogin(paymentRequestData.getPayer(),
+                paymentRequestData.getProduct());
+
+        return ResponseEntity.ok().body(
+                Map.of("message: ", "Pagamento aprovado com sucesso",
+                       "data",login
+                        )
+        );
+    }
 
     record LoginData(String email, String password){};
     private LoginData createLogin(
