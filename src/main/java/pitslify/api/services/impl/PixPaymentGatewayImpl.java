@@ -98,53 +98,52 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
         Long paymentId = Long.valueOf(mercadoPagoNotificacaoRequestDto.data().id());
         System.out.println("paymentID: " + paymentId);
 
-        return ResponseEntity.ok().body("não existe um pagamento com esse id");
 
-//        try{
-//            var paymentFounded = pagamento.get(paymentId);
-//
-//            if(paymentFounded != null){
-//                System.out.println("status: "+paymentFounded.getStatus());
-//
-//                String orderId = paymentFounded.getExternalReference();
-//
-//                System.out.println("orderId: "+orderId);
-//
-//                if(Objects.equals(paymentFounded.getStatus(), "approved")){
-//                    System.out.println("pagamento foi aprovado, agora vamos para implementação confirmaPagamento()");
-//
-//                    var optionalOrderEntity = orderRepository.findById(orderId);
-//
-//                    if(optionalOrderEntity.isEmpty()){
-//                         throw new RuntimeException("pagamento não existe");
-//                    }
-//
-//                    var orderEntity = optionalOrderEntity.get();
-//                    orderEntity.setStatus("approved");
-//
-//                    orderRepository.save(orderEntity);
-//
-//                   // sendCustomWebhook(paymentRequestData);
-//
-//                    var login  = createLogin(orderEntity.getPayer(),
-//                            orderEntity.getProduct());
-//
-//                    return ResponseEntity.ok().body(
-//                            Map.of("message: ", "Pagamento aprovado com sucesso",
-//                                    "data",login
-//                            ));
-//                }
-//
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("não existe um pagamento com esse id");
-//            }
-//            else {
-//                logger.info("não existe um pagamento com esse id");
-//                return ResponseEntity.ok().body("não existe um pagamento com esse id");
-//            }
-//
-//        }catch (RuntimeException e){
-//            throw new RuntimeException("excessao ao buscar paymentId, devido a: " + e.getMessage());
-//        }
+        try{
+            var paymentFounded = pagamento.get(paymentId);
+
+            if(paymentFounded != null){
+                System.out.println("status: "+paymentFounded.getStatus());
+
+                String orderId = paymentFounded.getExternalReference();
+
+                System.out.println("orderId: "+orderId);
+
+                if(Objects.equals(paymentFounded.getStatus(), "approved")){
+                    System.out.println("pagamento foi aprovado, agora vamos para implementação confirmaPagamento()");
+
+                    var optionalOrderEntity = orderRepository.findById(orderId);
+
+                    if(optionalOrderEntity.isEmpty()){
+                         throw new RuntimeException("pagamento não existe");
+                    }
+
+                    var orderEntity = optionalOrderEntity.get();
+                    orderEntity.setStatus("approved");
+
+                    orderRepository.save(orderEntity);
+
+                   // sendCustomWebhook(paymentRequestData);
+
+                    var login  = createLogin(orderEntity.getPayer(),
+                            orderEntity.getProduct());
+
+                    return ResponseEntity.ok().body(
+                            Map.of("message: ", "Pagamento aprovado com sucesso",
+                                    "data",login
+                            ));
+                }
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("não existe um pagamento com esse id");
+            }
+            else {
+                logger.info("não existe um pagamento com esse id");
+                return ResponseEntity.ok().body("não existe um pagamento com esse id");
+            }
+
+        }catch (RuntimeException e){
+            throw new RuntimeException("excessao ao buscar paymentId, devido a: " + e.getMessage());
+        }
     }
 
     @Override
