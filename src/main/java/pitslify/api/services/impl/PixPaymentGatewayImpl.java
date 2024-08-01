@@ -135,7 +135,11 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("não existe um pagamento com esse id");
             }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("não existe um pagamento com esse id");
+            else {
+                logger.info("não existe um pagamento com esse id");
+                return ResponseEntity.ok().body("não existe um pagamento com esse id");
+            }
+
         }catch (RuntimeException e){
             throw new RuntimeException("excessao ao buscar paymentId, devido a: " + e.getMessage());
         }
