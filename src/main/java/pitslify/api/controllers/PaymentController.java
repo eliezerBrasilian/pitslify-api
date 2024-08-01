@@ -48,14 +48,12 @@ public class PaymentController {
     //    @DeleteMapping("/tokens-salvos-de-celular/{id}")
     //    public ResponseEntity<Object> excluiTokenSalvo(@PathVariable String id){
 
-    @GetMapping("/check-order/{id}")
-    public ResponseEntity<Object> getOrderStatus(@PathVariable String id){
-
-        var emailTeste = "teste2@gmail.com";
+    @GetMapping("/check-order/{id}/{email}")
+    public ResponseEntity<Object> getOrderStatus(@PathVariable String id, @PathVariable String email){
 
         System.out.println("id: " + id);
         var optional = orderRepository.findById(id);
-        var optionalUser = userRepository.findByEmail(emailTeste);
+        var optionalUser = userRepository.findByEmail(email);
 
         if(optional.isEmpty()){
             throw new RuntimeException("order not found");
