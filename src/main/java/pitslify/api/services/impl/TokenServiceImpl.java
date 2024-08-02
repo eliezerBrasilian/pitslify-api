@@ -5,7 +5,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import pitslify.api.models.User;
+import pitslify.api.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -17,13 +17,13 @@ public class TokenServiceImpl {
 
     private String secret = "segredinho";
 
-    public String generateToken(User userModel) {
+    public String generateToken(UserEntity userEntityModel) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
             String token = JWT.create()
                     .withIssuer("auth")
-                    .withSubject(userModel.getEmail())
+                    .withSubject(userEntityModel.getEmail())
                     .withExpiresAt(getExpirationDate())
                     .sign(algorithm);
             return token;

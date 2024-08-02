@@ -4,12 +4,10 @@ package pitslify.api.controllers;
 import pitslify.api.records.Address;
 import pitslify.api.services.UserService;
 import pitslify.api.utils.AppUtils;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pitslify.api.dtos.ProfilePhotoDto;
-import pitslify.api.dtos.TokenDoDispositivoRequestDto;
 
 @RestController
 @RequestMapping(AppUtils.baseUrl + "/user")
@@ -18,10 +16,6 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/token-dispositivo")
-    public ResponseEntity<Object> salvaOuAtualizaToken(@Valid @RequestBody TokenDoDispositivoRequestDto tokenDoDispositivoRequestDto) {
-        return userService.salvaOuAtualizaToken(tokenDoDispositivoRequestDto);
-    }
 
     @PostMapping("update-photo")
     ResponseEntity<Object> updatePhoto(@RequestBody ProfilePhotoDto profilePhotoDto) {

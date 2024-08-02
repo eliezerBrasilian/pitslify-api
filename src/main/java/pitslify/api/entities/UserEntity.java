@@ -1,4 +1,4 @@
-package pitslify.api.models;
+package pitslify.api.entities;
 
 import pitslify.api.records.Address;
 import pitslify.api.dtos.AuthRequestDto;
@@ -21,7 +21,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class User implements UserDetails {
+public class UserEntity implements UserDetails {
     @Id
     private String id;
     private String email;
@@ -35,9 +35,9 @@ public class User implements UserDetails {
     private Address address;
     private Double moneySpentTotal;
     private String passwordNotEncrypted;
+    private Boolean isNewClient;
 
-
-    public User(AuthRequestDto authRequestDto) {
+    public UserEntity(AuthRequestDto authRequestDto) {
         this.email = authRequestDto.email();
         this.password = authRequestDto.password();
         this.userRole = authRequestDto.role().getRole();

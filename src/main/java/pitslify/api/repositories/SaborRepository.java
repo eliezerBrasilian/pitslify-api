@@ -1,6 +1,6 @@
 //package com.br.foodfacil.repositories;
 //
-//import com.br.foodfacil.models.Sabor;
+//import com.br.foodfacil.entities.Sabor;
 //import org.springframework.data.mongodb.repository.MongoRepository;
 //
 //

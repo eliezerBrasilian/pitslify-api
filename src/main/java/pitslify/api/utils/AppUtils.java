@@ -1,12 +1,7 @@
 package pitslify.api.utils;
 
-import pitslify.api.enums.Item;
-import pitslify.api.enums.MensagemRetorno;
 import lombok.Getter;
 import org.apache.commons.lang.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -17,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter

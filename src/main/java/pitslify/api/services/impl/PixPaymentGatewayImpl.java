@@ -2,13 +2,13 @@ package pitslify.api.services.impl;
 
 import org.springframework.beans.factory.annotation.Value;
 import pitslify.api.controllers.PaymentController;
-import pitslify.api.dtos.AuthRequestDto;
 import pitslify.api.dtos.MercadoPagoNotificacaoRequestDto;
 import pitslify.api.dtos.MercadoPagoNotificacaoResponseDto;
-import pitslify.api.enums.UserRole;
-import pitslify.api.models.OrderEntity;
-import pitslify.api.records.OrderRequestBodyDto;
+import pitslify.api.enums.OrderType;
+import pitslify.api.entities.OrderEntity;
+import pitslify.api.dtos.OrderRequestBodyDto;
 import pitslify.api.repositories.OrderRepository;
+import pitslify.api.repositories.UserRepository;
 import pitslify.api.services.MercadoPagoApiService;
 import pitslify.api.services.PixPaymentGateway;
 import pitslify.api.utils.AppUtils;
@@ -47,6 +47,9 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
     @Autowired
     MercadoPagoApiService mercadoPagoApiService;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     public ResponseEntity<Object> generatePixKey(OrderRequestBodyDto orderRequestBodyDto){
@@ -98,7 +101,6 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
         Long paymentId = Long.valueOf(mercadoPagoNotificacaoRequestDto.data().id());
         System.out.println("paymentID: " + paymentId);
 
-
         try{
             var paymentFounded = pagamento.get(paymentId);
 
@@ -123,22 +125,25 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
                     orderRepository.save(orderEntity);
 
-                   // sendCustomWebhook(paymentRequestData);
+                    if(orderEntity.getOrderType() == OrderType.CHECKOUT){
+                        var loginData = authService.createLogin(orderEntity.getPayer(),
+                                orderEntity.getProduct());
 
-                    var login  = createLogin(orderEntity.getPayer(),
-                            orderEntity.getProduct());
-
-                    return ResponseEntity.ok().body(
-                            Map.of("message: ", "Pagamento aprovado com sucesso",
-                                    "data",login
-                            ));
+                        return ResponseEntity.ok().body(
+                                Map.of("message: ", "Pagamento aprovado com sucesso",
+                                        "data",loginData
+                                ));
+                    }else{
+                        //todo
+                        return ResponseEntity.ok().body(
+                                Map.of("message: ", "Pagamento aprovado com sucesso"));
+                    }
                 }
-
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("não existe um pagamento com esse id");
+                throw new RuntimeException("Não existe um pagamento com esse id");
             }
             else {
                 logger.info("não existe um pagamento com esse id");
-                return ResponseEntity.ok().body("não existe um pagamento com esse id");
+                throw new RuntimeException("Não existe um pagamento com esse id");
             }
 
         }catch (RuntimeException e){
@@ -224,7 +229,6 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
         }
     }
 
-
     public ResponseEntity<Object> doPixPaymentFake(PaymentController.PaymentPixRequestDto paymentPixRequestDto) {
         var optionalPaymentRequestEntity = orderRepository.findById(paymentPixRequestDto.orderId());
 
@@ -239,33 +243,20 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
        // sendCustomWebhook(paymentRequestData);
 
-        var login  = createLogin(paymentRequestData.getPayer(),
-                paymentRequestData.getProduct());
-
-        return ResponseEntity.ok().body(
+//        var login  = createLogin(paymentRequestData.getPayer(),
+//                paymentRequestData.getProduct());
+//
+//        return ResponseEntity.ok().body(
+//                Map.of("message: ", "Pagamento aprovado com sucesso",
+//                       "data",login
+//                        )
+//        );
+                return ResponseEntity.ok().body(
                 Map.of("message: ", "Pagamento aprovado com sucesso",
-                       "data",login
+                       "data","login"
                         )
         );
-    }
 
-    record LoginData(String email, String password){};
-    private LoginData createLogin(
-            OrderRequestBodyDto.UserData payer,
-            OrderRequestBodyDto.ProductData product){
-
-        var password = AppUtils.generatePassword();
-
-        authService.register(new AuthRequestDto(
-                        payer.email(),
-                        password,
-                        UserRole.USER,
-                        payer.firstName(),
-                        ""
-                )
-        );
-
-        return new LoginData(payer.email(), password);
     }
 
     @Override

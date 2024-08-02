@@ -2,7 +2,10 @@ package pitslify.api.services.impl;
 import pitslify.api.dtos.AuthResponseDto;
 import pitslify.api.dtos.LoginAuthRequestDto;
 import pitslify.api.dtos.AuthRequestDto;
-import pitslify.api.models.User;
+import pitslify.api.entities.UserEntity;
+import pitslify.api.enums.UserRole;
+import pitslify.api.records.LoginData;
+import pitslify.api.dtos.OrderRequestBodyDto;
 import pitslify.api.repositories.UserRepository;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import pitslify.api.utils.AppUtils;
 
 import java.util.Map;
 
@@ -33,6 +36,25 @@ public class AuthService implements UserDetailsService {
     private TokenServiceImpl tokenServiceImpl;
 
     private AuthenticationManager authenticationManager;
+
+
+
+    public LoginData createLogin(
+            OrderRequestBodyDto.UserData payer,
+            OrderRequestBodyDto.ProductData product){
+
+        var password = AppUtils.generatePassword();
+
+        this.register(new AuthRequestDto(
+                        payer.email(),
+                        password,
+                        UserRole.USER,
+                        payer.firstName(),
+                        ""
+                )
+        );
+        return new LoginData(payer.email(), password);
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -82,7 +104,7 @@ public class AuthService implements UserDetailsService {
         String encryptedPassword = new BCryptPasswordEncoder().encode(authRequestDto.password());
 
         try{
-            var newUser = new User(authRequestDto);
+            var newUser = new UserEntity(authRequestDto);
             newUser.setMoneySpentTotal((double) 0);
             newUser.setPassword(encryptedPassword);
             newUser.setPasswordNotEncrypted(authRequestDto.password());

@@ -1,6 +1,9 @@
 package pitslify.api.services.impl;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import pitslify.api.config.FileStorageConfig;
+import pitslify.api.exceptions.CustomFileNotFoundException;
 import pitslify.api.exceptions.FileStorageException;
 import pitslify.api.records.FileDocument;
 import lombok.AllArgsConstructor;
@@ -9,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import pitslify.api.repositories.AppRepository;
+import pitslify.api.services.FileStorageService;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -20,7 +25,7 @@ import java.util.Objects;
 
 @AllArgsConstructor
 @Service
-public class FileStorageServiceImpl {
+public class FileStorageServiceImpl implements FileStorageService {
 
     private final Path fileStorageLocation;
 
@@ -40,7 +45,7 @@ public class FileStorageServiceImpl {
         }
     }
 
-    public FileDocument storeFile(MultipartFile file) {
+    public FileDocument storeFile(MultipartFile file, String id, String type) {
         var fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         try {
             if (fileName.contains("..")) {
@@ -54,16 +59,31 @@ public class FileStorageServiceImpl {
                 fileData = reduceImageQuality(file);
             }
 
-            FileDocument fileDocument = new FileDocument(
+           return new FileDocument(
                     fileName,
                     file.getContentType(),
                     fileData.length,
                     fileData
             );
 
-            return fileDocument;
+            //return fileName;
         } catch (Exception e) {
             throw new FileStorageException(String.format("Could not store file %s. Please try again!", fileName), e);
+        }
+    }
+
+    @Override
+    public Resource loadFileAsResource(String fileName){
+        try{
+            var filePath = this.fileStorageLocation.resolve(fileName);
+            var resource = new UrlResource(filePath.toUri());
+            if(resource.exists()){
+                return resource;
+            }else{
+                throw new CustomFileNotFoundException("File not found");
+            }
+        }catch (Exception e){
+            throw new CustomFileNotFoundException("File not found",e);
         }
     }
 

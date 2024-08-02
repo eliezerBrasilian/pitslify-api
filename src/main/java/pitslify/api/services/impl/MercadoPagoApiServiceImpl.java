@@ -1,6 +1,6 @@
 package pitslify.api.services.impl;
 
-import pitslify.api.records.OrderRequestBodyDto;
+import pitslify.api.dtos.OrderRequestBodyDto;
 import pitslify.api.services.MercadoPagoApiService;
 import com.mercadopago.client.payment.PaymentCreateRequest;
 import com.mercadopago.client.payment.PaymentPayerRequest;

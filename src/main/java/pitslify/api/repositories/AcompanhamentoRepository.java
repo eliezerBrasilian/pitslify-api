@@ -1,6 +1,6 @@
 //package com.br.foodfacil.repositories;
 //
-//import com.br.foodfacil.models.Acompanhamento;
+//import com.br.foodfacil.entities.Acompanhamento;
 //import org.springframework.data.mongodb.repository.MongoRepository;
 //
 //

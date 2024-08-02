@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pitslify.api.dtos.ProfilePhotoDto;
-import pitslify.api.dtos.TokenDoDispositivoRequestDto;
-import pitslify.api.repositories.OrderRepository;
 import pitslify.api.repositories.UserRepository;
 
 import java.util.Map;
@@ -20,17 +18,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
-
-    @Autowired
-    OrderRepository orderRepository;
-
-    @Autowired
-    PixPaymentGatewayImpl pagamentoServiceImpl;
-
-
-
-    @Autowired
-    TokenDoDispositivoServiceImpl tokenDoDispositivoServiceImpl;
 
     @Override
     public ResponseEntity<Object> updatePhoto(ProfilePhotoDto profilePhotoDto) {
@@ -97,8 +84,4 @@ public class UserServiceImpl implements UserService {
 //
 //    }
 
-    @Override
-    public ResponseEntity<Object> salvaOuAtualizaToken(TokenDoDispositivoRequestDto tokenDoDispositivoRequestDto) {
-        return tokenDoDispositivoServiceImpl.salvaOuAtualiza(tokenDoDispositivoRequestDto);
-    }
 }

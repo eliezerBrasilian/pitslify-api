@@ -2,10 +2,11 @@ package pitslify.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import pitslify.api.dtos.MercadoPagoNotificacaoRequestDto;
-import pitslify.api.records.OrderRequestBodyDto;
+import pitslify.api.dtos.OrderRequestBodyDto;
 import pitslify.api.repositories.OrderRepository;
 import pitslify.api.repositories.UserRepository;
 import pitslify.api.services.PixPaymentGateway;
+import pitslify.api.services.impl.AuthService;
 import pitslify.api.utils.AppUtils;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
@@ -28,6 +29,9 @@ public class PaymentController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    AuthService authService;
 
     @PostMapping("buy/access/basic")
     ResponseEntity<Object> generatePix(@Valid @RequestBody OrderRequestBodyDto orderRequestBodyDto) {
