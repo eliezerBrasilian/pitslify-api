@@ -17,8 +17,7 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
-        // Remove espaços adicionais que possam causar problemas
-        var allowedOrigins = originPatterns.replace("\"", "").split(",");
+        var allowedOrigins = originPatterns.split(",");
 
         corsRegistry
                 .addMapping("/**")

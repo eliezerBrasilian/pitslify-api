@@ -29,8 +29,6 @@ public class SecurityConfigurations {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, AppUtils.baseUrl + "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST,AppUtils.baseUrl + "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST,AppUtils.baseUrl + "/salgado").authenticated()
                         .requestMatchers(HttpMethod.POST,AppUtils.baseUrl + "/exibir_vendas").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,AppUtils.baseUrl + "/pedido").hasRole("ADMIN")
@@ -39,7 +37,6 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST,AppUtils.baseUrl + "/sabor").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,AppUtils.baseUrl + "/sabor/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT,AppUtils.baseUrl + "/sabor/{id}").hasRole("ADMIN")
-                        .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
