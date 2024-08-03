@@ -16,13 +16,17 @@ public class AppConfig implements WebMvcConfigurer {
     private String originPatterns;
 
     @Override
-    public void addCorsMappings(CorsRegistry corsRegistry){
-        var allowedOrigins = originPatterns.split(",");
+    public void addCorsMappings(CorsRegistry corsRegistry) {
+        // Remove espaços adicionais que possam causar problemas
+        var allowedOrigins = originPatterns.replace("\"", "").split(",");
 
         corsRegistry
                 .addMapping("/**")
                 .allowedMethods("*")
                 .allowedOrigins(allowedOrigins)
-                .allowCredentials(true);
+                .allowCredentials(true)
+                .allowedHeaders("*")
+                .exposedHeaders("Authorization", "Link", "X-Total-Count")
+                .maxAge(3600);
     }
 }
