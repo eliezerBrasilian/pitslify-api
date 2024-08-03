@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pitslify.api.dtos.AppRequestDto;
 import pitslify.api.dtos.UploadFileResponseDto;
+import pitslify.api.entities.AppEntity;
 import pitslify.api.records.FileDocument;
 import pitslify.api.repositories.AppRepository;
 import pitslify.api.repositories.UserRepository;
@@ -152,4 +153,5 @@ public class AppController {
                 .map(image -> uploadFileResponse(image,id,"image"))
                 .collect(Collectors.toList());
     }
+
 }

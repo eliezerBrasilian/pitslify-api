@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pitslify.api.dtos.AppRequestDto;
+import pitslify.api.enums.TransferStatus;
 import pitslify.api.records.FileDocument;
 
 import java.util.ArrayList;
@@ -34,8 +35,12 @@ public class AppEntity {
     private String appStatus;
     private long createdAt;
 
+    private String googlePlayLink;
+
+    private TransferStatus transferStatus;
 
     public AppEntity(AppRequestDto appRequestDto){
+        this.userId = appRequestDto.userData().id();
         this.name = appRequestDto.data().name();
         this.shortDescription =  appRequestDto.data().shortDescription();
         this.longDescription =  appRequestDto.data().longDescription();
@@ -46,7 +51,8 @@ public class AppEntity {
 
         this.images = new ArrayList<>();
         this.appStatus = appRequestDto.status().value;
+        this.googlePlayLink = "";
+        this.transferStatus = TransferStatus.IDLE;
         this.createdAt = System.currentTimeMillis();
-
     }
 }
