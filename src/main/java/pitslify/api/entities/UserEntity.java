@@ -36,6 +36,7 @@ public class UserEntity implements UserDetails {
     private Double moneySpentTotal;
     private String passwordNotEncrypted;
     private Boolean isNewClient;
+    private Boolean canSendApp;
 
     public UserEntity(AuthRequestDto authRequestDto) {
         this.email = authRequestDto.email();
@@ -45,6 +46,7 @@ public class UserEntity implements UserDetails {
         this.profilePicture = authRequestDto.profilePicture();
         this.createdAt = System.currentTimeMillis();
         this.isNewClient = true;
+        this.canSendApp = true;
     }
 
     @Override

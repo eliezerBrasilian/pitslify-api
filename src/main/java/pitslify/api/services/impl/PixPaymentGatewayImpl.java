@@ -132,7 +132,14 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
                                         "data", loginData
                                 ));
                     } else {
-                        //todo
+                        logger.info("pode enviar seu aplicativo");
+
+                        var userEntity = userRepository.findById(orderEntity.getPayer().userId())
+                                .orElseThrow(()->new RuntimeException("Usuário com esse id não existe"));
+
+                        userEntity.setIsNewClient(false);
+                        userEntity.setCanSendApp(true);
+
                         return ResponseEntity.ok().body(
                                 Map.of("message: ", "Pagamento aprovado com sucesso"));
                     }

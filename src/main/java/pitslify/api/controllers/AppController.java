@@ -63,10 +63,11 @@ public class AppController {
         }
     }
 
-    @PostMapping("file/upload/aab/{id}/{url}")
+    //app/file/upload/aab/66ae3231d907675c372ae498
+    @PostMapping("file/upload/aab/{id}")
     public ResponseEntity<Object> uploadAab(
             @PathVariable("id") String id,
-            @PathVariable("url") String url
+            @RequestBody String url
     ){
         var appEntity = appRepository.findById(id).orElseThrow(()->new RuntimeException("app não encontrado"));
         appEntity.setAab(url);
