@@ -37,7 +37,7 @@ public class PaymentController {
     ResponseEntity<Object> generatePix(@Valid @RequestBody OrderRequestBodyDto orderRequestBodyDto) {
         System.out.println(orderRequestBodyDto);
 
-        return  pixPaymentGateway.generatePixKey(orderRequestBodyDto);
+        return pixPaymentGateway.generatePixKey(orderRequestBodyDto);
     }
 
     @PostMapping("mercadopago/notificacao")

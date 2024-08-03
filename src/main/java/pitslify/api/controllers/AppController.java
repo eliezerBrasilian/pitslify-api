@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import pitslify.api.dtos.AppRequestDto;
 import pitslify.api.dtos.UploadFileResponseDto;
 import pitslify.api.records.FileDocument;
 import pitslify.api.repositories.AppRepository;
+import pitslify.api.repositories.UserRepository;
 import pitslify.api.services.AppService;
 import pitslify.api.services.FileStorageService;
 import pitslify.api.utils.AppUtils;
@@ -26,7 +28,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(AppUtils.baseUrl + "/app")
-
 public class AppController {
 
     @Autowired
@@ -38,17 +39,28 @@ public class AppController {
     @Autowired
     private AppRepository appRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @PostMapping("/create")
     public ResponseEntity<Object> createApp(
             @Valid
             @RequestBody AppRequestDto appRequestDto){
 
-        //se o usuario tiver acabado de criar a conta prossiga com a criação
-
-        //senao, devolva a chave pix pra ele,
-        //se o pagamento for aprovado, prossiga com a criação
-
-        return appService.createApp(appRequestDto);
+        var userEntity = userRepository.findById(appRequestDto.userData().id()).orElseThrow(()->new RuntimeException("user doesn't exist"));
+        if(userEntity.getIsNewClient()){
+            //todo se o usuario tiver acabado de criar a conta prossiga com a criação
+           // userEntity.setIsNewClient(false);
+           // userRepository.save((userEntity));
+            return appService.createApp(appRequestDto);
+        }
+        else{
+            //todo senao, devolva a chave pix pra ele,
+            //todo se o pagamento for aprovado, prossiga com a criação
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                    Map.of("message","this user can't not send app at this point")
+            );
+        }
     }
 
     @PostMapping("file/upload/aab/{id}/{url}")

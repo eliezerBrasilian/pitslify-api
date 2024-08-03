@@ -44,6 +44,7 @@ public class UserEntity implements UserDetails {
         this.name = authRequestDto.name();
         this.profilePicture = authRequestDto.profilePicture();
         this.createdAt = System.currentTimeMillis();
+        this.isNewClient = true;
     }
 
     @Override

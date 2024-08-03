@@ -35,26 +35,24 @@ import java.util.logging.Logger;
 @Service
 public class PixPaymentGatewayImpl implements PixPaymentGateway {
     private final Logger logger = Logger.getLogger(PixPaymentGatewayImpl.class.getName());
-
+    @Autowired
+    OrderRepository orderRepository;
+    @Autowired
+    AuthService authService;
+    @Autowired
+    MercadoPagoApiService mercadoPagoApiService;
+    @Autowired
+    UserRepository userRepository;
     @Value("${prod.access.token}")
     private String prodAccessToken;
 
-    @Autowired
-    OrderRepository orderRepository;
-
-    @Autowired
-    AuthService authService;
-
-    @Autowired
-    MercadoPagoApiService mercadoPagoApiService;
-
-    @Autowired
-    UserRepository userRepository;
+    @Value("${test.access.token}")
+    private String testAccessToken;
 
     @Override
-    public ResponseEntity<Object> generatePixKey(OrderRequestBodyDto orderRequestBodyDto){
+    public ResponseEntity<Object> generatePixKey(OrderRequestBodyDto orderRequestBodyDto) {
         logger.info("ProdAccesToken: " + prodAccessToken);
-        MercadoPagoConfig.setAccessToken(prodAccessToken);
+        MercadoPagoConfig.setAccessToken(testAccessToken);
 
         var requestOptions = mercadoPagoApiService.getRequestOptions();
 
@@ -83,9 +81,9 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
             return ResponseEntity.ok().body(response);
 
-        }catch (MPApiException | MPException e){
+        } catch (MPApiException | MPException e) {
             logger.info(e.getLocalizedMessage());
-           throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -101,23 +99,23 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
         Long paymentId = Long.valueOf(mercadoPagoNotificacaoRequestDto.data().id());
         System.out.println("paymentID: " + paymentId);
 
-        try{
+        try {
             var paymentFounded = pagamento.get(paymentId);
 
-            if(paymentFounded != null){
-                System.out.println("status: "+paymentFounded.getStatus());
+            if (paymentFounded != null) {
+                System.out.println("status: " + paymentFounded.getStatus());
 
                 String orderId = paymentFounded.getExternalReference();
 
-                System.out.println("orderId: "+orderId);
+                System.out.println("orderId: " + orderId);
 
-                if(Objects.equals(paymentFounded.getStatus(), "approved")){
+                if (Objects.equals(paymentFounded.getStatus(), "approved")) {
                     System.out.println("pagamento foi aprovado, agora vamos para implementação confirmaPagamento()");
 
                     var optionalOrderEntity = orderRepository.findById(orderId);
 
-                    if(optionalOrderEntity.isEmpty()){
-                         throw new RuntimeException("pagamento não existe");
+                    if (optionalOrderEntity.isEmpty()) {
+                        throw new RuntimeException("pagamento não existe");
                     }
 
                     var orderEntity = optionalOrderEntity.get();
@@ -125,28 +123,26 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
                     orderRepository.save(orderEntity);
 
-                    if(orderEntity.getOrderType() == OrderType.CHECKOUT){
+                    if (orderEntity.getOrderType() == OrderType.CHECKOUT) {
                         var loginData = authService.createLogin(orderEntity.getPayer(),
                                 orderEntity.getProduct());
 
                         return ResponseEntity.ok().body(
                                 Map.of("message: ", "Pagamento aprovado com sucesso",
-                                        "data",loginData
+                                        "data", loginData
                                 ));
-                    }else{
+                    } else {
                         //todo
                         return ResponseEntity.ok().body(
                                 Map.of("message: ", "Pagamento aprovado com sucesso"));
                     }
                 }
-                throw new RuntimeException("Não existe um pagamento com esse id");
-            }
-            else {
+            } else {
                 logger.info("não existe um pagamento com esse id");
-                throw new RuntimeException("Não existe um pagamento com esse id");
             }
+            throw new RuntimeException("Não existe um pagamento com esse id");
 
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new RuntimeException("excessao ao buscar paymentId, devido a: " + e.getMessage());
         }
     }
@@ -161,19 +157,17 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
             var orderId = orderEntity.getId();
 
-           // sendCustomWebhook(paymentRequest);
+            // sendCustomWebhook(paymentRequest);
 
             return ResponseEntity.ok().body(
                     Map.of(
-                            "order_id",orderId,
+                            "order_id", orderId,
                             "pix_key", "00020126420014br.gov.bcb.pix0120admin@foodfacil.site520400005303986540525.505802BR5923DEELIEZER202202110139296009Sao Paulo62240520mpqrinter791905408246304A712"
                     )
-
-            ) ;
+            );
         } catch (Exception e) {
             // Logar a exceção detalhadamente
             logger.severe("Erro ao gerar a chave Pix fake: " + e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException("Erro encontrado na tentativa de devolver a chave pix", e);
         }
     }
@@ -232,7 +226,7 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
     public ResponseEntity<Object> doPixPaymentFake(PaymentController.PaymentPixRequestDto paymentPixRequestDto) {
         var optionalPaymentRequestEntity = orderRepository.findById(paymentPixRequestDto.orderId());
 
-        if(optionalPaymentRequestEntity.isEmpty()){
+        if (optionalPaymentRequestEntity.isEmpty()) {
             return ResponseEntity.badRequest().body("orderId não existe");
         }
 
@@ -241,22 +235,16 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
         orderRepository.save(paymentRequestData);
 
-       // sendCustomWebhook(paymentRequestData);
+        // sendCustomWebhook(paymentRequestData);
 
-//        var login  = createLogin(paymentRequestData.getPayer(),
-//                paymentRequestData.getProduct());
-//
-//        return ResponseEntity.ok().body(
-//                Map.of("message: ", "Pagamento aprovado com sucesso",
-//                       "data",login
-//                        )
-//        );
-                return ResponseEntity.ok().body(
+        var login  = authService.createLogin(paymentRequestData.getPayer(),
+                paymentRequestData.getProduct());
+
+        return ResponseEntity.ok().body(
                 Map.of("message: ", "Pagamento aprovado com sucesso",
-                       "data","login"
+                       "data",login
                         )
         );
-
     }
 
     @Override
@@ -265,25 +253,25 @@ public class PixPaymentGatewayImpl implements PixPaymentGateway {
 
         var optionalPaymentRequestEntity = orderRepository.findById(paymentId);
 
-        if(optionalPaymentRequestEntity.isEmpty()){
+        if (optionalPaymentRequestEntity.isEmpty()) {
             return ResponseEntity.badRequest().body("pagamento não existe");
         }
 
         System.out.println("paymentID: " + paymentId);
 
-        try{
+        try {
             var paymentRequestData = optionalPaymentRequestEntity.get();
 
-            if(Objects.equals(paymentRequestData.getStatus(), "approved")){
-                    System.out.println("pagamento foi aprovado, agora vamos para implementação confirmaPagamento()");
-                    //pedidoServiceImpl.confirmaPagamento(pedidoId);
+            if (Objects.equals(paymentRequestData.getStatus(), "approved")) {
+                System.out.println("pagamento foi aprovado, agora vamos para implementação confirmaPagamento()");
+                //pedidoServiceImpl.confirmaPagamento(pedidoId);
 
-                    return ResponseEntity.ok().body("Pagamento aprovado com sucesso");
-                }
+                return ResponseEntity.ok().body("Pagamento aprovado com sucesso");
+            }
 
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("não existe um pagamento com esse id");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("não existe um pagamento com esse id");
 
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new RuntimeException("excessao ao buscar paymentId, devido a: " + e.getMessage());
         }
     }
