@@ -72,6 +72,8 @@ public class AppController {
         var appEntity = appRepository.findById(id).orElseThrow(()->new RuntimeException("app não encontrado"));
         appEntity.setAab(url);
 
+        appRepository.save(appEntity);
+
         return ResponseEntity.ok().body(
                 Map.of( "message","sucesso")
         );
