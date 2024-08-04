@@ -1,7 +1,7 @@
 package pitslify.api.controllers;
 
 
-import pitslify.api.entities.AppEntity;
+import pitslify.api.dtos.AppResponseDto;
 import pitslify.api.enums.TransferStatus;
 import pitslify.api.records.Address;
 import pitslify.api.repositories.AppRepository;
@@ -13,7 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pitslify.api.dtos.ProfilePhotoDto;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Map;
 
 @RestController
@@ -80,10 +81,37 @@ public class UserController {
     }
 
     @GetMapping("my-apps/{userId}")
-    public List<AppEntity> getAllApps(@PathVariable String userId){
+    public ArrayList<AppResponseDto> getAllApps(@PathVariable String userId){
         var userEntity = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user com esse id não foi encontrado"));
 
-        return appRepository.findByUserId(userId);
+         var apps = appRepository.findByUserId(userId);
+
+         var appsResponse = new ArrayList<AppResponseDto>();
+
+         apps.forEach(i-> {
+
+             String iconBase64 = Base64.getEncoder().encodeToString(i.getIcon().data());
+
+             appsResponse.add(new AppResponseDto(
+                     i.getId(),
+                     i.getUserId(),
+                     i.getName(),
+                     i.getShortDescription(),
+                     i.getLongDescription(),
+                     i.getHasAdds(),
+                     i.getCollectsLocalization(),
+                     i.getLoginData(),
+                     i.getAllowsPurchase(),
+                     iconBase64,
+                     i.getImages(),
+                     i.getAab(),
+                     i.getAppStatus(),
+                     i.getCreatedAt(),
+                     i.getGooglePlayLink(),
+                     i.getTransferStatus()));
+         });
+
+         return appsResponse;
     }
 
     @PostMapping("request-app-transfer/{userId}/{appId}")

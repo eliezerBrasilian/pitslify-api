@@ -67,9 +67,6 @@ public class PaymentController {
             throw new RuntimeException("user with this email not found");
         }
 
-        //devolver o status da ordem
-        //e eventualmente a senha que foi gerada para o usuário
-
         var orderEntity = optional.get();
         var userEntity = optionalUser.get();
 

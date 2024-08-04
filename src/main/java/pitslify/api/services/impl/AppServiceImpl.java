@@ -18,7 +18,6 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public ResponseEntity<Object> createApp(AppRequestDto appRequestDto) {
-
         var appEntity = appRepository.save(new AppEntity(appRequestDto));
         return ResponseEntity.ok().body(
                 Map.of(
@@ -28,51 +27,36 @@ public class AppServiceImpl implements AppService {
         );
     }
 
-    @Override
-    public ResponseEntity<Object> addIcon(FileDocument fileDocument,String appId) {
-        var appEntityOptional = appRepository.findById(appId);
-
-        if(appEntityOptional.isEmpty()){
-           throw new RuntimeException("Este app com o id " + appId + " não existe!");
-        }
-        var appEntity = appEntityOptional.get();
-        appEntity.setIcon(fileDocument);
-
-        appRepository.save(appEntity);
-        return ResponseEntity.ok().body(
-                Map.of("message","Icon added successfully")
-        );
-    }
-
-    @Override
-    public ResponseEntity<Object> addImages(FileDocument fileDocument, String appId) {
-        var appEntityOptional = appRepository.findById(appId);
-
-        if(appEntityOptional.isEmpty()){
-            throw new RuntimeException("Este app com o id " + appId + " não existe!");
-        }
-        var appEntity = appEntityOptional.get();
-        appEntity.setIcon(fileDocument);
-
-        appRepository.save(appEntity);
-        return ResponseEntity.ok().body(
-                Map.of("message","Icon added successfully")
-        );
-    }
-
-    @Override
-    public ResponseEntity<Object> addAab(FileDocument fileDocument, String appId) {
-        var appEntityOptional = appRepository.findById(appId);
-
-        if(appEntityOptional.isEmpty()){
-            throw new RuntimeException("Este app com o id " + appId + " não existe!");
-        }
-        var appEntity = appEntityOptional.get();
-        appEntity.setIcon(fileDocument);
-
-        appRepository.save(appEntity);
-        return ResponseEntity.ok().body(
-                Map.of("message","Icon added successfully")
-        );
-    }
+//    @Override
+//    public ResponseEntity<Object> addIcon(FileDocument fileDocument,String appId) {
+//        var appEntityOptional = appRepository.findById(appId);
+//
+//        if(appEntityOptional.isEmpty()){
+//           throw new RuntimeException("Este app com o id " + appId + " não existe!");
+//        }
+//        var appEntity = appEntityOptional.get();
+//        appEntity.setIcon(fileDocument);
+//
+//        appRepository.save(appEntity);
+//        return ResponseEntity.ok().body(
+//                Map.of("message","Icon added successfully")
+//        );
+//    }
+//
+//
+//    @Override
+//    public ResponseEntity<Object> addAab(FileDocument fileDocument, String appId) {
+//        var appEntityOptional = appRepository.findById(appId);
+//
+//        if(appEntityOptional.isEmpty()){
+//            throw new RuntimeException("Este app com o id " + appId + " não existe!");
+//        }
+//        var appEntity = appEntityOptional.get();
+//        appEntity.setIcon(fileDocument);
+//
+//        appRepository.save(appEntity);
+//        return ResponseEntity.ok().body(
+//                Map.of("message","Icon added successfully")
+//        );
+//    }
 }

@@ -50,9 +50,7 @@ public class AppController {
 
         var userEntity = userRepository.findById(appRequestDto.userData().id()).orElseThrow(()->new RuntimeException("user doesn't exist"));
         if(userEntity.getIsNewClient()){
-            //todo se o usuario tiver acabado de criar a conta prossiga com a criação
-           // userEntity.setIsNewClient(false);
-           // userRepository.save((userEntity));
+            userRepository.save((userEntity));
             return appService.createApp(appRequestDto);
         }
         else{
@@ -76,7 +74,7 @@ public class AppController {
         appRepository.save(appEntity);
 
         return ResponseEntity.ok().body(
-                Map.of( "message","sucesso")
+                Map.of( "message","sucesso ao enviar aab")
         );
     }
 
@@ -96,7 +94,7 @@ public class AppController {
                 .toUriString();
 
         var optionalAppEntity = appRepository.findById(id);
-        if(optionalAppEntity.isEmpty())throw new RuntimeException("doesn't exist a row with this id " + id);
+        if(optionalAppEntity.isEmpty())throw new RuntimeException("app não encontrado");
         else{
             var appEntity = optionalAppEntity.get();
 
@@ -110,6 +108,8 @@ public class AppController {
             }
 
             appRepository.save(appEntity);
+
+            System.out.println("salvou: " + type);
 
             return new UploadFileResponseDto(
                     fileDocument.fileName(),
