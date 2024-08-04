@@ -42,19 +42,6 @@ public class UserController {
         return userService.updateAddress(address, userId);
     }
 
-//    @PostMapping("cupom/add")
-//    ResponseEntity<Object> addCupom(@RequestBody UserCupomDto userCupom) {
-//        System.out.println("cupom recebido");
-//
-//        return userService.addCupom(userCupom);
-//    }
-
-//    @PostMapping("cupom/use")
-//    ResponseEntity<Object> useCupom(@RequestBody CupomToUpdateDto cupomToUpdateDto) {
-//
-//        return userService.usarCupom(cupomToUpdateDto);
-//    }
-
 
     @GetMapping("check-send-app/{id}")
     ResponseEntity<Object> checkIfUserCanSendApp(@PathVariable String id) {
@@ -104,8 +91,8 @@ public class UserController {
     ResponseEntity<Object> requestAppTransfer(@PathVariable String userId,
                                               @PathVariable String appId){
 
-        var userEntity = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user com esse id não foi encontrado"));
-        var appEntity = appRepository.findById(userId).orElseThrow(()->new RuntimeException("app com esse id não foi encontrado"));
+        userRepository.findById(userId).orElseThrow(()->new RuntimeException("user com esse id não foi encontrado"));
+        var appEntity = appRepository.findById(appId).orElseThrow(()->new RuntimeException("app com esse id não foi encontrado"));
 
         appEntity.setTransferStatus(TransferStatus.REQUESTED);
 
@@ -118,6 +105,4 @@ public class UserController {
             throw new RuntimeException(e.getMessage());
         }
     }
-
-
 }

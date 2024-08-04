@@ -1,4 +1,4 @@
-package pitslify.api.records;
+package pitslify.api.enums;
 
 public enum AppStatus {
     WAITING_PUSH("waiting_push"),

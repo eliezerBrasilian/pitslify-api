@@ -2,7 +2,7 @@ package pitslify.api.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
-import pitslify.api.records.AppStatus;
+import pitslify.api.enums.AppStatus;
 
 public record AppRequestDto(
         @NotNull Data data,

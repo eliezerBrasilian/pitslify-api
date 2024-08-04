@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import pitslify.api.dtos.AppRequestDto;
 import pitslify.api.enums.TransferStatus;
+import pitslify.api.enums.AppStatus;
 import pitslify.api.records.FileDocument;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class AppEntity {
     private List<FileDocument> images;
     private String aab;
 
-    private String appStatus;
+    private AppStatus appStatus;
     private long createdAt;
 
     private String googlePlayLink;
@@ -50,7 +51,7 @@ public class AppEntity {
         this.allowsPurchase = appRequestDto.data().allowsPurchase();
 
         this.images = new ArrayList<>();
-        this.appStatus = appRequestDto.status().value;
+        this.appStatus = appRequestDto.status();
         this.googlePlayLink = "";
         this.transferStatus = TransferStatus.IDLE;
         this.createdAt = System.currentTimeMillis();
