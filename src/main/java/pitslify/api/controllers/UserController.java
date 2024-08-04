@@ -42,7 +42,6 @@ public class UserController {
         return userService.updateAddress(address, userId);
     }
 
-
     @GetMapping("check-send-app/{id}")
     ResponseEntity<Object> checkIfUserCanSendApp(@PathVariable String id) {
 
