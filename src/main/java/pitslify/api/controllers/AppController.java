@@ -49,17 +49,9 @@ public class AppController {
             @RequestBody AppRequestDto appRequestDto){
 
         var userEntity = userRepository.findById(appRequestDto.userData().id()).orElseThrow(()->new RuntimeException("user doesn't exist"));
-        if(userEntity.getIsNewClient()){
-            userRepository.save((userEntity));
-            return appService.createApp(appRequestDto);
-        }
-        else{
-            //todo senao, devolva a chave pix pra ele,
-            //todo se o pagamento for aprovado, prossiga com a criação
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
-                    Map.of("message","this user can't not send app at this point")
-            );
-        }
+
+        userRepository.save((userEntity));
+        return appService.createApp(appRequestDto);
     }
 
     //app/file/upload/aab/66ae3231d907675c372ae498
