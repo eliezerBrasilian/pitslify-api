@@ -132,4 +132,18 @@ public class UserController {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+
+    @PostMapping("allow-post-app/{userId}")
+    public ResponseEntity<Object> allowUserSendApp(@PathVariable String userId){
+        var userEntity = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user com esse id não foi encontrado"));
+
+        userEntity.setCanSendApp(true);
+
+        userRepository.save(userEntity);
+
+        return ResponseEntity.ok().body(
+                Map.of("message","permissao concedida com sucesso")
+        );
+    }
 }
