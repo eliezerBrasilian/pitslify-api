@@ -164,4 +164,18 @@ public class AppController {
             );
     }
 
+    @PostMapping("update-app-playstore-url/{appId}")
+    ResponseEntity<Object> requestAppTransfer(@PathVariable String appId,
+                                              @NotNull @RequestBody String url){
+
+        var appEntity = appRepository.findById(appId).orElseThrow(()->new RuntimeException("app com esse id não foi encontrado"));
+
+        appEntity.setGooglePlayLink(url);
+
+        appRepository.save(appEntity);
+        return ResponseEntity.ok().body(
+                Map.of("message","link da google play adicionado com sucesso")
+        );
+    }
+
 }
