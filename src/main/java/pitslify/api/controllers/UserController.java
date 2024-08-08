@@ -149,6 +149,20 @@ public class UserController {
         );
     }
 
+    @PostMapping("revoke-post-app/{userId}")
+    public ResponseEntity<Object> revokeUserSendApp(@PathVariable String userId){
+        var userEntity = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user com esse id não foi encontrado"));
+
+        userEntity.setCanSendApp(false);
+
+        userRepository.save(userEntity);
+
+        return ResponseEntity.ok().body(
+                Map.of("message","permissao revogada com sucesso")
+        );
+    }
+
+
     @PostMapping("request-app-update/{userId}/{appId}")
     ResponseEntity<Object> requestAppUpdate(@PathVariable String userId,
                                               @PathVariable String appId){
