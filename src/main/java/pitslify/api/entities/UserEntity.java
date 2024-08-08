@@ -1,5 +1,6 @@
 package pitslify.api.entities;
 
+import jakarta.validation.constraints.NotNull;
 import pitslify.api.records.Address;
 import pitslify.api.dtos.AuthRequestDto;
 import pitslify.api.enums.UserRole;
@@ -27,7 +28,7 @@ public class UserEntity implements UserDetails {
     private String email;
     private String name;
     private String password;
-    private String userRole;
+    private @NotNull UserRole userRole;
     private String profilePicture;
     private long createdAt;
     private Date updatedAt;
@@ -39,9 +40,9 @@ public class UserEntity implements UserDetails {
     private Boolean canSendApp;
 
     public UserEntity(AuthRequestDto authRequestDto) {
-        this.email = authRequestDto.email();
+        this.email = authRequestDto.email().trim();
         this.password = authRequestDto.password();
-        this.userRole = authRequestDto.role().getRole();
+        this.userRole = authRequestDto.role();
         this.name = authRequestDto.name();
         this.profilePicture = authRequestDto.profilePicture();
         this.createdAt = System.currentTimeMillis();
@@ -51,7 +52,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (Objects.equals(this.userRole, UserRole.ADMIN.getRole()))
+        if (Objects.equals(this.userRole, UserRole.ADMIN))
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
         else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }

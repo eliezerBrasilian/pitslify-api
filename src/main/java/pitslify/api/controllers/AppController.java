@@ -1,6 +1,7 @@
 package pitslify.api.controllers;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -14,6 +15,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pitslify.api.dtos.AppRequestDto;
 import pitslify.api.dtos.UploadFileResponseDto;
 import pitslify.api.entities.AppEntity;
+import pitslify.api.enums.TransferStatus;
+import pitslify.api.enums.UpdateStatus;
 import pitslify.api.records.FileDocument;
 import pitslify.api.repositories.AppRepository;
 import pitslify.api.repositories.UserRepository;
@@ -146,5 +149,19 @@ public class AppController {
                 .collect(Collectors.toList());
     }
 
+    record TransferStatusRequestDto(TransferStatus transferStatus){}
+    @PostMapping("update-app-transfer-status/{appId}")
+    ResponseEntity<Object> requestAppTransfer(@PathVariable String appId,
+                                             @NotNull @RequestBody TransferStatusRequestDto transferStatusRequestDto){
+
+        var appEntity = appRepository.findById(appId).orElseThrow(()->new RuntimeException("app com esse id não foi encontrado"));
+
+        appEntity.setTransferStatus(transferStatusRequestDto.transferStatus);
+
+        appRepository.save(appEntity);
+            return ResponseEntity.ok().body(
+                    Map.of("message","status da transferência atualizado com sucesso")
+            );
+    }
 
 }

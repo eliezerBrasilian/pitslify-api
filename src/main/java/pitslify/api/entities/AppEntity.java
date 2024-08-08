@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import pitslify.api.dtos.AppRequestDto;
 import pitslify.api.enums.TransferStatus;
 import pitslify.api.enums.AppStatus;
+import pitslify.api.enums.UpdateStatus;
 import pitslify.api.records.FileDocument;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class AppEntity {
     private String googlePlayLink;
 
     private TransferStatus transferStatus;
+    private UpdateStatus updateStatus;
 
     public AppEntity(AppRequestDto appRequestDto){
         this.userId = appRequestDto.userData().id();
@@ -54,6 +56,7 @@ public class AppEntity {
         this.appStatus = appRequestDto.status();
         this.googlePlayLink = "";
         this.transferStatus = TransferStatus.IDLE;
+        this.updateStatus = UpdateStatus.IDLE;
         this.createdAt = System.currentTimeMillis();
     }
 }

@@ -96,8 +96,8 @@ public class AuthService implements UserDetailsService {
         }
     }
 
-    public void register(AuthRequestDto authRequestDto) {
-        if (this.userRepository.findByEmail(authRequestDto.email()).isPresent()){
+    public ResponseEntity<Map<String, String>> register(AuthRequestDto authRequestDto) {
+        if (this.userRepository.findByEmail(authRequestDto.email().trim()).isPresent()){
             throw  new RuntimeException("este email já está em uso");
         }
 
@@ -105,11 +105,15 @@ public class AuthService implements UserDetailsService {
 
         try{
             var newUser = new UserEntity(authRequestDto);
-            newUser.setMoneySpentTotal((double) 0);
             newUser.setPassword(encryptedPassword);
             newUser.setPasswordNotEncrypted(authRequestDto.password());
 
-            userRepository.save(newUser);
+           var userEntity =  userRepository.save(newUser);
+
+            return ResponseEntity.ok().body(
+                    Map.of("message","user created",
+                            "id: ", userEntity.getId())
+            );
 
         }catch (RuntimeException e){
             throw new RuntimeException(e.getMessage());

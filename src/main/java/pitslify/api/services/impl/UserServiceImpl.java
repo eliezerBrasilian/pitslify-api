@@ -14,9 +14,6 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    PixPaymentGatewayImpl pixPaymentGateway;
-
-    @Autowired
     UserRepository userRepository;
 
     @Override
@@ -65,23 +62,5 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.badRequest().body(data);
         }
     }
-
-//    @Override
-//    public ResponseEntity<Object> getPedidos(String userId) {
-//        var optionalUser = userRepository.findById(userId);
-//
-//        if (optionalUser.isEmpty()) {
-//            return ResponseEntity.badRequest().body(Map.of("message", "usuário não existe"));
-//        }
-//
-//        try {
-//            var pedidos = paymentRequestRepository.findByUserIdOrderByCreatedAtDesc(userId);
-//
-//            return ResponseEntity.ok().body(pedidos);
-//        } catch (RuntimeException e) {
-//            throw new RuntimeException("excessao ocorreu ao tentar buscar os pedidos do usuario: " + e.getMessage());
-//        }
-//
-//    }
 
 }

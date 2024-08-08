@@ -4,6 +4,8 @@ public enum TransferStatus {
     IDLE,
     REQUESTED,
     ACCEPTED,
+    CANCELED,
     DISAPPROVED,
+    WAITING,
     SUCCESS
 }

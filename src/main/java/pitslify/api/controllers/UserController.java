@@ -3,6 +3,7 @@ package pitslify.api.controllers;
 
 import pitslify.api.dtos.AppResponseDto;
 import pitslify.api.enums.TransferStatus;
+import pitslify.api.enums.UpdateStatus;
 import pitslify.api.records.Address;
 import pitslify.api.repositories.AppRepository;
 import pitslify.api.repositories.UserRepository;
@@ -90,7 +91,7 @@ public class UserController {
 
          apps.forEach(i-> {
 
-             String iconBase64 = Base64.getEncoder().encodeToString(i.getIcon().data());
+             String iconBase64 = i.getIcon()!= null? Base64.getEncoder().encodeToString(i.getIcon().data()) : "";
 
              appsResponse.add(new AppResponseDto(
                      i.getId(),
@@ -108,7 +109,9 @@ public class UserController {
                      i.getAppStatus(),
                      i.getCreatedAt(),
                      i.getGooglePlayLink(),
-                     i.getTransferStatus()));
+                     i.getTransferStatus(),
+                     i.getUpdateStatus())
+             );
          });
 
          return appsResponse;
@@ -133,7 +136,6 @@ public class UserController {
         }
     }
 
-
     @PostMapping("allow-post-app/{userId}")
     public ResponseEntity<Object> allowUserSendApp(@PathVariable String userId){
         var userEntity = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user com esse id não foi encontrado"));
@@ -144,6 +146,22 @@ public class UserController {
 
         return ResponseEntity.ok().body(
                 Map.of("message","permissao concedida com sucesso")
+        );
+    }
+
+    @PostMapping("request-app-update/{userId}/{appId}")
+    ResponseEntity<Object> requestAppUpdate(@PathVariable String userId,
+                                              @PathVariable String appId){
+
+        userRepository.findById(userId).orElseThrow(()->new RuntimeException("user com esse id não foi encontrado"));
+        var appEntity = appRepository.findById(appId).orElseThrow(()->new RuntimeException("app com esse id não foi encontrado"));
+
+        appEntity.setUpdateStatus(UpdateStatus.REQUESTED);
+
+        appRepository.save(appEntity);
+
+        return ResponseEntity.ok().body(
+                    Map.of("message","atualização solicitada com sucesso")
         );
     }
 }

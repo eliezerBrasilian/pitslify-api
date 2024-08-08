@@ -2,6 +2,7 @@ package pitslify.api.dtos;
 
 import pitslify.api.enums.AppStatus;
 import pitslify.api.enums.TransferStatus;
+import pitslify.api.enums.UpdateStatus;
 import pitslify.api.records.FileDocument;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public record AppResponseDto(
         AppStatus appStatus,
         long createdAt,
         String googlePlayLink,
-        TransferStatus transferStatus
+        TransferStatus transferStatus,
+        UpdateStatus updateStatus
 ) {
 }
