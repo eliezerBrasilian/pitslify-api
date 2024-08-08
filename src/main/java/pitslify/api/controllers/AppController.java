@@ -170,6 +170,7 @@ public class AppController {
 
         var appEntity = appRepository.findById(appId).orElseThrow(()->new RuntimeException("app com esse id não foi encontrado"));
 
+        System.out.println(url);
         appEntity.setGooglePlayLink(url);
 
         appRepository.save(appEntity);
@@ -177,5 +178,4 @@ public class AppController {
                 Map.of("message","link da google play adicionado com sucesso")
         );
     }
-
 }
